@@ -1,6 +1,6 @@
 # Aurora NDI EM Tracker Simulink Wrapper
 
-The Simulink library found in this repo (auroraNDILibrary.slx) contains a block which can communicate with the Aurora NDI EM Tracker. Under the hood, the block contains a level 2 C-MEX S-Function used to communicate with the Aurora EM tracking unit. The S-Function was created and tested using MATLAB/Simulink 2021a. It works with Aurora firmware revision 11 and combined API revision D.002.007.
+The Simulink library found in this repo (auroraNDILibrary.slx) contains a block which can communicate with the Aurora NDI EM Tracker. Under the hood, the block contains a level 2 C-MEX S-Function used to communicate with the Aurora EM tracking unit. The S-Function has been tested using MATLAB/Simulink 2021a. It works with Aurora firmware revision 11 and combined API revision D.002.007.
 
 ### Setting up your block
 
