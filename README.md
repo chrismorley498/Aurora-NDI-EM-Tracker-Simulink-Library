@@ -4,7 +4,7 @@ The Simulink library found in this repo (auroraNDILibrary.slx) contains a block 
 
 ### Setting up your block
 
-For those wishing to begin using the block right away all that is required is that you add the block to a Simulink model and ensure the current MATLAB path is set to a directory containing the pre-compiled S-Function (auroraNDIComm.mexw64). There are two block parameters that must be set. Currently this block only supports a connection to the SCU via USB. There are two parameters for the block. The first parameter is the desired sample time. See the suggested sample times below under the different simulation modes. The second parameter is the Port Number. If the aurora SCU appears under device manger as "COM6" then you would enter "6" in the Port Number field.
+For those wishing to begin using the block right away all that is required is that you add the block to a Simulink model and ensure the current MATLAB path is set to a directory containing the pre-compiled S-Function (auroraNDIComm.mexw64). Currently this block only supports a connection to the SCU via USB. There are two parameters for the block. The first parameter is the desired sample time. See the suggested sample times below under the different simulation modes. The second parameter is the Port Number. If the aurora SCU appears under device manger as "COM6" then you would enter "6" in the Port Number field.
 
 ### Inputs & Outputs
 
