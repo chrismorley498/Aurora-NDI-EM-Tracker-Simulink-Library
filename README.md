@@ -4,7 +4,7 @@ The Simulink library found in this repo (auroraNDILibrary.slx) contains a block 
 
 ### Setting up your block
 
-For those wishing to begin using the block right away all that is required is that you add the block to a Simulink model and ensure the current MATLAB path is set to a directory containing the pre-compiled S-Function (auroraNDIComm.mexw64). Currently this block only supports a connection to the SCU via USB. There are two parameters for the block. The first parameter is the desired sample time. See the suggested sample times below under the different simulation modes. The second parameter is the Port Number. If the aurora SCU appears under device manger as "COM6" then you would enter "6" in the Port Number field.
+For those wishing to begin using the block right away all that is required is that you add the block to a Simulink model and ensure the current MATLAB path is set to a directory containing the pre-compiled S-Function (auroraNDIComm.mexw64). Currently this block only supports a connection to the SCU via USB. There are two parameters for the block. The first parameter is the desired sample frequency. See the suggested sample times below under the different simulation modes. The second parameter is the Port Number. If the aurora SCU appears under device manger as "COM6" then you would enter "6" in the Port Number field.
 
 ### Inputs & Outputs
 
@@ -24,7 +24,7 @@ Once in tracking mode, the block can run at up to ~20 Hz before the Simulink eng
 
 ### Real-Time Code Generation
 
-This block supports real-time code generation, specifically using QuaRC by Quanser. The block will likely work with the MATLAB Desktop Real-Time Kernel however (RTK) this has not been tested. The RTK is incompatible with certain #includes (windows.h for example) so if a build error occurs using RTK it is likely that a dependent #include for the S-Function is trying to include an incompatible header file. When generating real-time code one must remember to add the libraries & headers to the custom code tab, underneath code generation in the model preferences. While running the block with generated code, the block can run up to 40Hz which is the hardware limitation for sampling frequency.
+This block supports real-time code generation, specifically using QuaRC by Quanser. The block will likely work with the MATLAB Desktop Real-Time Kernel (RTK) however this has not been tested. The RTK is incompatible with certain #includes (windows.h for example) so if a build error occurs using RTK it is likely that a dependent #include for the S-Function is trying to include an incompatible header file. When generating real-time code one must remember to add the libraries & headers to the custom code tab, underneath code generation in the model preferences. While running the block with generated code, the block can run up to 40Hz which is the hardware limitation for sampling frequency.
 
 ### Runtime Behaviour
 
