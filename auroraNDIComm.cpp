@@ -10,52 +10,44 @@
 
 
 static void mdlInitializeSizes(SimStruct *S)
-{    
-    int numInputs=2;    
+{
+    int numInputs=2;
     int numOutputs=5;
-    
+
     //Creating a I work vector that will be used to hold the number of sensors attached to the SCU
     ssSetNumIWork(S,1);
     ssSetNumPWork(S,1);
     ssSetNumDWork(S,1);
     ssSetDWorkWidth(S,0,28);
     ssSetDWorkDataType(S,0,SS_DOUBLE);
-    
+
     //Discrete states are used to implement delays between certain API function calls which require time between them
     ssSetNumDiscStates(S,6);
 
     ssSetNumInputPorts(S,numInputs);
     ssSetNumOutputPorts(S,numOutputs);
-    
+
     ssSetOptions(S,SS_OPTION_ALLOW_PORT_SAMPLE_TIME_IN_TRIGSS);
-        
-    //Run this loop only if inputs exist for the block
-    if(numInputs!=0)
+
+    for(int i=0;i<numInputs;i++)
     {
-        for(int i=0;i<numInputs;i++)
-        {
-            ssSetInputPortSampleTime(S,i,-1);
-            ssSetInputPortOffsetTime(S,i,0);
-            ssSetInputPortWidth(S,i,1);
-            ssSetInputPortDataType(S,i,SS_DOUBLE);
-            ssSetInputPortDirectFeedThrough(S,i,1);
-            ssSetInputPortComplexSignal(S,i,COMPLEX_NO);
-        }
+        ssSetInputPortSampleTime(S,i,-1);
+        ssSetInputPortOffsetTime(S,i,0);
+        ssSetInputPortWidth(S,i,1);
+        ssSetInputPortDataType(S,i,SS_DOUBLE);
+        ssSetInputPortDirectFeedThrough(S,i,1);
+        ssSetInputPortComplexSignal(S,i,COMPLEX_NO);
     }
-    //Run this only if outputs exist for the block
-    if(numOutputs!=0)
+
+    for(int i=0;i<numOutputs;i++)
     {
-        for(int i=0;i<numOutputs;i++)
-        {
-            ssSetOutputPortSampleTime(S,i,-1);
-            ssSetOutputPortOffsetTime(S,i,0);
-            ssSetOutputPortWidth(S,i,i==4?1:7);
-            ssSetOutputPortDataType(S,i,SS_DOUBLE);
-            ssSetOutputPortComplexSignal(S,i,COMPLEX_NO);
-        }
-    }   
-     
-}
+        ssSetOutputPortSampleTime(S,i,-1);
+        ssSetOutputPortOffsetTime(S,i,0);
+        ssSetOutputPortWidth(S,i,i==4?1:7);
+        ssSetOutputPortDataType(S,i,SS_DOUBLE);
+        ssSetOutputPortComplexSignal(S,i,COMPLEX_NO);
+    }
+}//End of mdlInitializeSizes function
 
 static void mdlInitializeSampleTimes(SimStruct *S)
 {
@@ -65,14 +57,14 @@ static void mdlSetInputPortSampleTime(SimStruct *S,int_T portIdx,real_T sampleTi
 {
     int numInputs=2;
     int numOutputs=4;
-    
+
     for(int i=0;i<numInputs;i++)
     {
         ssSetInputPortSampleTime(S, i, sampleTime);
         ssSetInputPortOffsetTime(S, i, offsetTime);
     }
     //If the function is within a triggered subsystem then the following is called
-    if (ssSampleAndOffsetAreTriggered(sampleTime,offsetTime)) 
+    if (ssSampleAndOffsetAreTriggered(sampleTime,offsetTime))
     {
         for(int i=0;i<numOutputs;i++)
         {
@@ -87,14 +79,14 @@ static void mdlSetOutputPortSampleTime(SimStruct *S,int_T portIdx,real_T sampleT
 {
     int numInputs=2;
     int numOutputs=5;
-    
+
     for(int i=0;i<numOutputs;i++)
     {
         ssSetOutputPortSampleTime(S, i, sampleTime);
         ssSetOutputPortOffsetTime(S, i, offsetTime);
     }
     //If the function is within a triggered subsystem then the following is called
-    if (ssSampleAndOffsetAreTriggered(sampleTime,offsetTime)) 
+    if (ssSampleAndOffsetAreTriggered(sampleTime,offsetTime))
     {
         for(int i=0;i<numInputs;i++)
         {
@@ -109,7 +101,7 @@ static void mdlStart(SimStruct *S)
 {
     //Going to intialize the value of the IWork vector holding the number of connected sensors
     ssSetIWorkValue(S,0,0);
-    
+
     //Initilize the DWorkVector holding the previous measurements to values of zero
     /*DWork[0:6]    ->  [W,Qx,Qy,Qz,X,Y,Z] Sensor One
      *DWork[7:13]   ->  [W,Qx,Qy,Qz,X,Y,Z] Sensor Two
@@ -121,7 +113,7 @@ static void mdlStart(SimStruct *S)
     {
         dWorkValues[i]=0;
     }
-    
+
     //Setting All States to Zero upon program entry
     /*x[0]: Connected
      *x[1]: Initialized
@@ -131,27 +123,27 @@ static void mdlStart(SimStruct *S)
      *x[5]: Begin Measuring
      */
     real_T *x0 = ssGetRealDiscStates(S);
-    for (int i=0;i<6;i++) 
-    { 
+    for (int i=0;i<6;i++)
+    {
         *x0++=0.0;
     }
-    
+
 }
 
 //#define MDL_INITIALIZE_CONDITIONS
 static void mdlInitializeConditions(SimStruct *S)
 {
-    
+
 }//End of mdlInitlialzeConditions
 
 
 static void mdlOutputs(SimStruct *S, int_T tid)
-{  
+{
     //Get pointer to DWork Vector. This is used to update/Acess previous sensor measurements (Post Formatting)
     real_T *dWorkValues=(real_T*)ssGetDWork(S,0);
-    
+
     static CombinedApi capi = CombinedApi();//Create the capi class object
-    static CombinedApi *capiPtr;//Create capi pointer 
+    static CombinedApi *capiPtr;//Create capi pointer
     capiPtr=&capi;
     ssSetPWorkValue(S,0,capiPtr);
     real_T *x=ssGetRealDiscStates(S);//Get pointer to state vector
@@ -162,9 +154,9 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     double *y2 = ssGetOutputPortRealSignal(S,2);//Pointer to output
     double *y3 = ssGetOutputPortRealSignal(S,3);//Pointer to output
     double *auroraInitialized = ssGetOutputPortRealSignal(S,4);//Pointer to output
-    
+
     double time=double(*u0Ptrs[0]);
-        
+
     //Connects to the SCU
     if(x[0]==0&&time>3)
     {
@@ -220,9 +212,9 @@ static void mdlOutputs(SimStruct *S, int_T tid)
                 comPort="COM15";
                 break;
             default:
-                comPort="COM0";            
+                comPort="COM0";
         }
-       
+
         std::string hostname = std::string(comPort);
         std::string scu_hostname = "";
 
@@ -241,8 +233,8 @@ static void mdlOutputs(SimStruct *S, int_T tid)
     else if(x[0]==0&&time<3)//This else-if is added to make sure a value is assigned to x[4] before other statements check it in the condition
     {
         x[4]=*u0Ptrs[0];
-    }    
-    
+    }
+
     //Initialize the SCU
     else if(((time-x[4])>.5)&&x[1]==0&&x[0]==1)
     {
@@ -251,9 +243,9 @@ static void mdlOutputs(SimStruct *S, int_T tid)
         x[1]=1;
         x[4]=*u0Ptrs[0];
     }//End of Initialize SCU
-    
-    
-    
+
+
+
     //Search for connected sensors and Intialize all connected ones found
     else if(((time-x[4])>.5)&&x[2]==0&&x[1]==1)
     {
@@ -269,9 +261,9 @@ static void mdlOutputs(SimStruct *S, int_T tid)
         x[2]=1;
         x[4]=*u0Ptrs[0];
     }//End of Search for and Initialize Sensors
-    
-    
-    
+
+
+
     //Enable the ports for all connected & Initialized Sensors, Also activate the feild generator
     else if(((time-x[4])>.5)&&x[3]==0&&x[2]==1)
     {
@@ -288,8 +280,8 @@ static void mdlOutputs(SimStruct *S, int_T tid)
         auroraInitialized[0]=x[3];
         x[4]=*u0Ptrs[0];
     }//End of enabling ports and activating field generator
-    
-    
+
+
     //Take Measurements from device
     else if((((time-x[4])>.5)&&x[3]==1)||(x[5]==1))//Test to see if 2 seconds has passed since last change of state OR if the device is already in measuring mode
     {
@@ -302,16 +294,16 @@ static void mdlOutputs(SimStruct *S, int_T tid)
         int sensorReadingBeginingLocation[4];
         bool sensorInBounds[4];
         std::string stringsToFormat[4];
-        
+
         //Begin reading previous measurements
         for(int j=0;j<4;j++)
         {
             for(int i=0;i<7;i++)
             {
-             previousPositions[i][j]=double(dWorkValues[i+7*j]);  
+             previousPositions[i][j]=double(dWorkValues[i+7*j]);
             }
         }//End of reading previous measurements
-        
+
         //Begin determining which sensors have valid measurements within the measurement volume
         for (int i = 0; i < numPorts; i++)
         {
@@ -325,7 +317,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
                 sensorInBounds[i] = TRUE;
             }
             else
-            {   
+            {
                 sensorInBounds[i]=FALSE;
             }
 
@@ -338,7 +330,7 @@ static void mdlOutputs(SimStruct *S, int_T tid)
                 stringsToFormat[i] = "SENSOROUTOFBOUNDS";
             }
         }//Finish determining if sensors are within measurements volume
-        
+
         //Begin formatting measurement data
         for(int i=0;i<numPorts;i++)
         {
@@ -356,18 +348,18 @@ static void mdlOutputs(SimStruct *S, int_T tid)
         dWorkValues[4]=sensorReading[4][0];
         dWorkValues[5]=sensorReading[5][0];
         dWorkValues[6]=sensorReading[6][0];
-        
+
         //Place current,formatted, measurements in the DWork vector
         for(int j=0;j<4;j++)
         {
             for(int i=0;i<7;i++)
             {
 //                 std::cout<<i<<" "<<j<<" "<<i+7*j<<sensorReading[i][j]<<std::endl;
-             dWorkValues[i+7*j]=sensorReading[i][j];  
+             dWorkValues[i+7*j]=sensorReading[i][j];
             }
         }
-       
-        x[5]=1;//Measurement state is either changed to one or remains one 
+
+        x[5]=1;//Measurement state is either changed to one or remains one
     }//End of aquiring measurements from device
 }//End of mdlOutputs
 
@@ -376,7 +368,7 @@ static void mdlTerminate(SimStruct *S)
 {
 //     static CombinedApi capi = CombinedApi();
 //     capi.stopTracking();
-//     static CombinedApi *capiPtr;//Create capi pointer 
+//     static CombinedApi *capiPtr;//Create capi pointer
     void *capiPtr=ssGetPWorkValue(S,0);
 //     capiPtr->stopTracking();
     std::cout<<"[AURORA EM TRACKER]: Stopping Tracking"<<std::endl;
